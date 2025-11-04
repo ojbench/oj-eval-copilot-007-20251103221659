@@ -90,7 +90,11 @@ bool processLine(std::string line, Program &program, EvalState &state, bool &qui
     } else {
         // It's a direct command
         if (token == "RUN") {
-            runProgram(program, state);
+            try {
+                runProgram(program, state);
+            } catch (ErrorException &ex) {
+                std::cout << ex.getMessage() << std::endl;
+            }
         } else if (token == "LIST") {
             int lineNum = program.getFirstLineNumber();
             while (lineNum != -1) {
@@ -111,7 +115,12 @@ bool processLine(std::string line, Program &program, EvalState &state, bool &qui
             std::string firstToken;
             Statement *stmt = parseStatement(scanner, firstToken);
             if (stmt != nullptr) {
-                stmt->execute(state, program);
+                try {
+                    stmt->execute(state, program);
+                } catch (...) {
+                    delete stmt;
+                    throw;
+                }
                 delete stmt;
             }
         }
