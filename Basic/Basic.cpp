@@ -136,11 +136,23 @@ Statement* parseStatement(TokenScanner &scanner, std::string &firstToken) {
         if (equals != "=") {
             error("SYNTAX ERROR");
         }
-        Expression *exp = parseExp(scanner);
-        return new LetStatement(var, exp);
+        Expression *exp = nullptr;
+        try {
+            exp = parseExp(scanner);
+            return new LetStatement(var, exp);
+        } catch (...) {
+            delete exp;
+            throw;
+        }
     } else if (firstToken == "PRINT") {
-        Expression *exp = parseExp(scanner);
-        return new PrintStatement(exp);
+        Expression *exp = nullptr;
+        try {
+            exp = parseExp(scanner);
+            return new PrintStatement(exp);
+        } catch (...) {
+            delete exp;
+            throw;
+        }
     } else if (firstToken == "INPUT") {
         std::string var = scanner.nextToken();
         // Check if variable is a keyword
@@ -156,17 +168,25 @@ Statement* parseStatement(TokenScanner &scanner, std::string &firstToken) {
         return new GotoStatement(targetLine);
     } else if (firstToken == "IF") {
         // Parse left expression without consuming comparison operator
-        Expression *lhs = readE(scanner, 0);
-        std::string op = scanner.nextToken();
-        // Parse right expression
-        Expression *rhs = readE(scanner, 0);
-        std::string thenStr = scanner.nextToken();
-        if (thenStr != "THEN") {
-            error("SYNTAX ERROR");
+        Expression *lhs = nullptr;
+        Expression *rhs = nullptr;
+        try {
+            lhs = readE(scanner, 0);
+            std::string op = scanner.nextToken();
+            // Parse right expression
+            rhs = readE(scanner, 0);
+            std::string thenStr = scanner.nextToken();
+            if (thenStr != "THEN") {
+                error("SYNTAX ERROR");
+            }
+            std::string lineStr = scanner.nextToken();
+            int targetLine = stringToInteger(lineStr);
+            return new IfStatement(lhs, op, rhs, targetLine);
+        } catch (...) {
+            delete lhs;
+            delete rhs;
+            throw;
         }
-        std::string lineStr = scanner.nextToken();
-        int targetLine = stringToInteger(lineStr);
-        return new IfStatement(lhs, op, rhs, targetLine);
     } else if (firstToken == "END") {
         return new EndStatement();
     }
