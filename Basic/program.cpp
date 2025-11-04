@@ -10,55 +10,73 @@
 
 #include "program.hpp"
 
-
-
 Program::Program() = default;
 
-Program::~Program() = default;
+Program::~Program() {
+    clear();
+}
 
 void Program::clear() {
-    // Replace this stub with your own code
-    //todo
+    for (auto &pair : statements) {
+        delete pair.second;
+    }
+    statements.clear();
+    sourceLines.clear();
 }
 
 void Program::addSourceLine(int lineNumber, const std::string &line) {
-    // Replace this stub with your own code
-    //todo
+    if (statements.find(lineNumber) != statements.end()) {
+        delete statements[lineNumber];
+        statements.erase(lineNumber);
+    }
+    sourceLines[lineNumber] = line;
 }
 
 void Program::removeSourceLine(int lineNumber) {
-    // Replace this stub with your own code
-    //todo
+    if (statements.find(lineNumber) != statements.end()) {
+        delete statements[lineNumber];
+        statements.erase(lineNumber);
+    }
+    sourceLines.erase(lineNumber);
 }
 
 std::string Program::getSourceLine(int lineNumber) {
-    // Replace this stub with your own code
-    //todo
+    if (sourceLines.find(lineNumber) != sourceLines.end()) {
+        return sourceLines[lineNumber];
+    }
+    return "";
 }
 
 void Program::setParsedStatement(int lineNumber, Statement *stmt) {
-    // Replace this stub with your own code
-    //todo
+    if (statements.find(lineNumber) != statements.end()) {
+        delete statements[lineNumber];
+    }
+    statements[lineNumber] = stmt;
 }
 
-//void Program::removeSourceLine(int lineNumber) {
-
 Statement *Program::getParsedStatement(int lineNumber) {
-   // Replace this stub with your own code
-   //todo
+    if (statements.find(lineNumber) != statements.end()) {
+        return statements[lineNumber];
+    }
+    return nullptr;
 }
 
 int Program::getFirstLineNumber() {
-    // Replace this stub with your own code
-    //todo
+    if (sourceLines.empty()) {
+        return -1;
+    }
+    return sourceLines.begin()->first;
 }
 
 int Program::getNextLineNumber(int lineNumber) {
-    // Replace this stub with your own code
-    //todo
+    auto it = sourceLines.find(lineNumber);
+    if (it != sourceLines.end()) {
+        ++it;
+        if (it != sourceLines.end()) {
+            return it->first;
+        }
+    }
+    return -1;
 }
-
-//more func to add
-//todo
 
 

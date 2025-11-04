@@ -75,9 +75,13 @@ public:
 
     void Clear();
 
+    void setCurrentLine(int line);
+    int getCurrentLine() const;
+
 private:
 
     std::map<std::string, int> symbolTable;
+    int currentLine;
 
 };
 

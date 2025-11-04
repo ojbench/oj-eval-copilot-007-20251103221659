@@ -85,4 +85,67 @@ public:
  * specify its own destructor method to free that memory.
  */
 
+class RemStatement : public Statement {
+public:
+    RemStatement();
+    virtual ~RemStatement();
+    virtual void execute(EvalState &state, Program &program);
+};
+
+class LetStatement : public Statement {
+public:
+    LetStatement(std::string var, Expression *exp);
+    virtual ~LetStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    std::string variable;
+    Expression *expr;
+};
+
+class PrintStatement : public Statement {
+public:
+    PrintStatement(Expression *exp);
+    virtual ~PrintStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    Expression *expr;
+};
+
+class InputStatement : public Statement {
+public:
+    InputStatement(std::string var);
+    virtual ~InputStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    std::string variable;
+};
+
+class GotoStatement : public Statement {
+public:
+    GotoStatement(int line);
+    virtual ~GotoStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    int targetLine;
+};
+
+class IfStatement : public Statement {
+public:
+    IfStatement(Expression *lhs, std::string oper, Expression *rhs, int line);
+    virtual ~IfStatement();
+    virtual void execute(EvalState &state, Program &program);
+private:
+    Expression *left;
+    std::string op;
+    Expression *right;
+    int targetLine;
+};
+
+class EndStatement : public Statement {
+public:
+    EndStatement();
+    virtual ~EndStatement();
+    virtual void execute(EvalState &state, Program &program);
+};
+
 #endif
