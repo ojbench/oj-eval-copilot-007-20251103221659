@@ -16,6 +16,7 @@
 Expression *parseExp(TokenScanner &scanner) {
     Expression *exp = readE(scanner);
     if (scanner.hasMoreTokens()) {
+        delete exp;
         error("parseExp: Found extra token: " + scanner.nextToken());
     }
     return exp;
@@ -61,7 +62,9 @@ Expression *readT(TokenScanner &scanner) {
     if (token == "-") return new CompoundExp(token, new ConstantExp(0), readE(scanner));
     if (token != "(") error("Illegal term in expression");
     Expression *exp = readE(scanner);
-    if (scanner.nextToken() != ")") {
+    std::string closeParen = scanner.nextToken();
+    if (closeParen != ")") {
+        delete exp;
         error("Unbalanced parentheses in expression");
     }
     return exp;
